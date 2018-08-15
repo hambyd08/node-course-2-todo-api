@@ -69,7 +69,7 @@ app.delete('/todos/:id', (req, res) => {
             return console.log('Unable to find todo');
         }
         // if doc, send doc with 200
-        res.status(200).send(todo);
+        res.status(200).send({todo});
     }).catch((e) => {
         res.status(400).send();
     });
