@@ -13,7 +13,7 @@ var UserSchema = new mongoose.Schema({
        unique: true,
        validate: {
            validator:  validator.isEmail,
-           message: '{VALUE} is not a valid email'
+           message: '{VALUE} is not a valid email' // may need back ticks for {VALUE}
        }
     },
     password: {
@@ -72,6 +72,27 @@ UserSchema.statics.findByToken = function (token) {
        '_id': decoded._id,
        'tokens.token': token,
        'tokens.access': 'auth' 
+    });
+};
+
+UserSchema.statics.findByCredentials = function(email, password) {
+    var User = this;
+
+    return User.findOne({email}).then((user) => {
+        if (!user) {
+            return Promise.reject();
+        }
+
+        return new Promise((resolve, reject) => {
+            // use bcrypt.compare to compare password and user.password
+            bcrypt.compare(password, user.password , (err, res) => {
+                if(res) {
+                    resolve(user);
+                } else {
+                    reject();
+                }
+            });
+        });
     });
 };
 
